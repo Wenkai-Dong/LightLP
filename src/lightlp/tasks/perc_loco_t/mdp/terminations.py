@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 import torch
 
 from isaaclab.managers import SceneEntityCfg
-from pxr.UsdPhysics._usdPhysics import ArticulationDesc
 
 if TYPE_CHECKING:
     from isaaclab.assets import RigidObject, Articulation
