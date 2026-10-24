@@ -7,12 +7,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from typing import TYPE_CHECKING, Literal
+
 import torch
 
+from isaaclab.envs.mdp.events import randomize_actuator_gains, _randomize_prop_by_op
+from isaaclab.managers import SceneEntityCfg
+
 if TYPE_CHECKING:
-    from isaaclab.envs import ManagerBasedRLEnv
+    from isaaclab.envs import ManagerBasedRLEnv, ManagerBasedEnv
 
 
-def reset(env: ManagerBasedRLEnv, env_ids: torch.Tensor | None) -> None:
-    """Implement the task's reset term."""
-    raise NotImplementedError("Implement the reset term.")
+def resample_immunity_flag(env: ManagerBasedRLEnv, env_ids, ratio: float = 0.1) -> None:
+    env.immunity_flag[:] = torch.rand(env.num_envs, device=env.device) < ratio

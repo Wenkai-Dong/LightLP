@@ -5,26 +5,31 @@
 
 from isaaclab.utils import configclass
 
-from isaaclab_rl.rsl_rl import RslRlMLPModelCfg, RslRlOnPolicyRunnerCfg, RslRlPpoAlgorithmCfg
+from isaaclab_rl.rsl_rl import RslRlMLPModelCfg, RslRlOnPolicyRunnerCfg, RslRlPpoAlgorithmCfg, RslRlSymmetryCfg
 
 
 @configclass
 class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
-    num_steps_per_env = 16
-    max_iterations = 150
-    save_interval = 50
-    experiment_name = "cartpole_direct"
-    obs_groups = {"actor": ["policy"], "critic": ["policy"]}
+    num_steps_per_env = 24
+    max_iterations = 10000
+    save_interval = 100
+    experiment_name = "prec_loco_t"
+    obs_groups = {"actor": ["actor", "height_scan"], "critic": ["critic", "height_scan", "foot_height_scan"]}
+    # torch_compile_mode: Literal["default", "max-autotune-no-cudagraphs"] | None = None
+    # logger = "wandb"
+    # wandb_project = "Game"
     actor = RslRlMLPModelCfg(
-        hidden_dims=[32, 32],
+        class_name="lightlp.rsl_rl.models.loco_t_model:LocoTeacherActorModel",
+        hidden_dims=[512, 256, 128],
         activation="elu",
-        obs_normalization=False,
+        obs_normalization=True,
         distribution_cfg=RslRlMLPModelCfg.GaussianDistributionCfg(init_std=1.0),
     )
     critic = RslRlMLPModelCfg(
+        class_name="lightlp.rsl_rl.models.loco_t_model:LocoTeacherActorModel",
         hidden_dims=[32, 32],
         activation="elu",
-        obs_normalization=False,
+        obs_normalization=True,
     )
     algorithm = RslRlPpoAlgorithmCfg(
         value_loss_coef=1.0,
